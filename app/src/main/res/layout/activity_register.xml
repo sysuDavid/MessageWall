@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.sysu.weijia.messagewall.ui.activity.RegisterActivity">
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textEmailAddress"
+        android:ems="10"
+        android:id="@+id/editText_email"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:hint="@string/email"
+        android:textColor="@color/textColor" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPassword"
+        android:ems="10"
+        android:id="@+id/editText_password"
+        android:layout_below="@id/editText_email"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignRight="@id/editText_email"
+        android:layout_alignEnd="@id/editText_email"
+        android:hint="@string/password"
+        android:textColor="@color/textColor" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPassword"
+        android:ems="10"
+        android:id="@+id/editText_password_confirm"
+        android:layout_below="@id/editText_password"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignRight="@id/editText_password"
+        android:layout_alignEnd="@id/editText_password"
+        android:hint="@string/password_confirm"
+        android:textColor="@color/textColor" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/editText_nickname"
+        android:layout_below="@id/editText_password_confirm"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignRight="@id/editText_password_confirm"
+        android:layout_alignEnd="@id/editText_password_confirm"
+        android:hint="@string/nickname"
+        android:textColor="@color/textColor"
+        android:singleLine="true" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/register"
+        android:id="@+id/button_register"
+        android:layout_below="@id/editText_nickname"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignRight="@id/editText_nickname"
+        android:layout_alignEnd="@id/editText_nickname"
+        android:background="@color/colorPrimary"/>
+
+
+</RelativeLayout>

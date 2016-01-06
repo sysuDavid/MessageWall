@@ -1,40 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.sysu.weijia.messagewall">
+
     <!-- add location permission -->
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS"/>
-    <uses-permission android:name="android.permission.LOCATION_HARDWARE"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
+    <uses-permission android:name="android.permission.LOCATION_HARDWARE" />
     <!-- add network permission -->
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
-    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"/>
-    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
     <!-- add other permission -->
-    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
+        android:name=".app.MyApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
+        <!-- 设置高德地图API的key -->
         <meta-data
             android:name="com.amap.api.v2.apikey"
-            android:value="b44e0cbaecddb28cc3bd5929c965db08" />
+            android:value="@string/AMap_apikey" />
+
         <activity
             android:name=".ui.activity.MainActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <service android:name="com.amap.api.location.APSService" />
+
+        <activity android:name=".ui.activity.RegisterActivity"></activity>
+        <activity android:name=".ui.activity.LoginActivity">
+
+        </activity>
+        <activity android:name=".ui.activity.StartActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        
-        <service android:name="com.amap.api.location.APSService"></service>
     </application>
 
 </manifest>

@@ -14,12 +14,12 @@
         android:background="?attr/colorPrimary"
         app:popupTheme="@style/AppTheme.PopupOverlay" />
 
-    <com.amap.api.maps2d.MapView
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/map"
-        android:layout_below="@id/toolbar_main">
+        android:id="@+id/fragment_content"
+        android:layout_below="@id/toolbar_main" />
 
-    </com.amap.api.maps2d.MapView>
+
 
 </RelativeLayout>
