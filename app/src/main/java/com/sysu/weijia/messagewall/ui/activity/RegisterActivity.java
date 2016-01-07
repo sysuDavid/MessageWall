@@ -90,6 +90,7 @@ public class RegisterActivity extends AppCompatActivity implements RegisterView,
         Intent intent = new Intent();
         intent.setClass(this, MainActivity.class);
         startActivity(intent);
+        finish();
     }
 
     @Override

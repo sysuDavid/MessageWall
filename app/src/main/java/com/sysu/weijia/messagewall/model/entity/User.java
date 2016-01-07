@@ -46,21 +46,25 @@ public class User extends AVUser {
     }
 
     public String getUsername() {
+        username = getString("username");
         return username;
     }
 
     public String getPassword() {
+        password = getString("password");
         return password;
     }
 
     public String getNickname() {
+        nickname = getString("nickname");
         return nickname;
     }
 
     public String getEmail() {
+        email = getString("email");
         return email;
     }
-    // 基类实现了Parcelable接口，这里强制必须有Creator
 
+    // 基类实现了Parcelable接口，这里强制必须有Creator
     public static final Creator CREATOR = AVObjectCreator.instance;
 }

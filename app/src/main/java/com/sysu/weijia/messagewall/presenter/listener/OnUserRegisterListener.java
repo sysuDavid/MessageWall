@@ -1,4 +1,4 @@
-package com.sysu.weijia.messagewall.presenter;
+package com.sysu.weijia.messagewall.presenter.listener;
 
 import com.sysu.weijia.messagewall.model.entity.User;
 

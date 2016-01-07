@@ -1,12 +1,19 @@
 package com.sysu.weijia.messagewall.ui.fragment;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.util.Log;
+import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
@@ -18,9 +25,12 @@ import com.amap.api.maps2d.LocationSource;
 import com.amap.api.maps2d.MapView;
 import com.amap.api.maps2d.model.BitmapDescriptorFactory;
 import com.amap.api.maps2d.model.LatLng;
+import com.amap.api.maps2d.model.Marker;
 import com.amap.api.maps2d.model.MarkerOptions;
 import com.amap.api.maps2d.model.MyLocationStyle;
 import com.sysu.weijia.messagewall.R;
+import com.sysu.weijia.messagewall.ui.activity.CreateSubjectActivity;
+import com.sysu.weijia.messagewall.ui.view.LoginView;
 
 public class MapFragment extends Fragment implements LocationSource, AMapLocationListener{
     // 地图显示变量
@@ -30,9 +40,24 @@ public class MapFragment extends Fragment implements LocationSource, AMapLocatio
     private LocationSource.OnLocationChangedListener mLocationChangeListener = null;
     private AMapLocationClient mLocationClient;
     private AMapLocationClientOption mLocationCLientOption;
+    // 添加的Marker
+    Marker addedMarker;
+
     // 坐标变量
     private double currentLatitude;
     private double currentLongitude;
+
+    private double addedLatitude;
+    private double addedLongitude;
+
+    private Button createButton;
+    private Button confirmButton;
+    private Button cancelButton;
+    private TextView tipTextView;
+    private Context context;
+
+    private Dialog confirmDialog;
+    private Dialog cancelDialog;
 
     public MapFragment() {
         // Required empty public constructor
@@ -55,7 +80,65 @@ public class MapFragment extends Fragment implements LocationSource, AMapLocatio
         amap = mapView.getMap();
         // 设置缩放级别：3~20
         amap.moveCamera(CameraUpdateFactory.zoomTo(16));
+
+        init(view);
+
         return view;
+    }
+
+    public void init(View view) {
+        context = getActivity();
+        createButton = (Button)view.findViewById(R.id.button_create);
+        confirmButton = (Button)view.findViewById(R.id.button_confirm_create);
+        cancelButton = (Button)view.findViewById(R.id.button_cancel_create);
+        tipTextView = (TextView)view.findViewById(R.id.textView_tip);
+
+        ButtonClickListener buttonClickListener = new ButtonClickListener();
+        createButton.setOnClickListener(buttonClickListener);
+        confirmButton.setOnClickListener(buttonClickListener);
+        cancelButton.setOnClickListener(buttonClickListener);
+
+        confirmDialog = new AlertDialog.Builder(context)
+                .setTitle("确定位置")
+                .setMessage("确定该位置吗？")
+                .setPositiveButton("确定",  new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        recoverState();
+                        addedMarker = null;
+                        Intent intent = new Intent();
+                        intent.setClass(context, CreateSubjectActivity.class);
+                        Log.i("yuan", "addedLatitude: " + addedLatitude + ", addedLongitude: "+addedLongitude);
+                        intent.putExtra("latitude", addedLatitude);
+                        intent.putExtra("longitude", addedLongitude);
+                        startActivity(intent);
+                    }
+                })
+                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                })
+                .create();
+        cancelDialog = new AlertDialog.Builder(context)
+                .setTitle("撤销添加")
+                .setMessage("确定撤销留言墙添加吗？")
+                .setPositiveButton("确定",  new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        recoverState();
+
+                    }
+                })
+                .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                })
+                .create();
+
     }
 
     @Override
@@ -145,19 +228,92 @@ public class MapFragment extends Fragment implements LocationSource, AMapLocatio
             if (aMapLocation.getErrorCode() == 0) {
                 currentLatitude = aMapLocation.getLatitude();
                 currentLongitude = aMapLocation.getLongitude();
-                Log.i("yuan", "currentLatitude: "+currentLatitude+", currentLongitude: "+currentLongitude);
-                addMarkTest();
+                Log.i("yuan", "currentLatitude: " + currentLatitude + ", currentLongitude: " + currentLongitude);
                 mLocationChangeListener.onLocationChanged(aMapLocation);
             }
         }
     }
 
-    public void addMarkTest() {
-        MarkerOptions makerOptions = new MarkerOptions();
-        makerOptions.position(new LatLng(currentLatitude+0.0005, currentLongitude+0.0005));
-        makerOptions.title("Test");
-        // 使用默认标记
-        makerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
-        amap.addMarker(makerOptions);
+
+    public void changeState() {
+        tipTextView.setText(getString(R.string.tip_drag));
+        createButton.setVisibility(View.INVISIBLE);
+        confirmButton.setVisibility(View.VISIBLE);
+        cancelButton.setVisibility(View.VISIBLE);
+    }
+
+    public void recoverState() {
+        tipTextView.setText(getString(R.string.tip_create));
+        createButton.setVisibility(View.VISIBLE);
+        confirmButton.setVisibility(View.INVISIBLE);
+        cancelButton.setVisibility(View.INVISIBLE);
+        if (addedMarker != null && addedMarker.isVisible()) {
+            addedMarker.setVisible(false);
+        }
+
+    }
+
+    class ButtonClickListener implements View.OnClickListener {
+        MarkerOptions dragMarkerOptions = new MarkerOptions();
+
+        public void initOptions() {
+
+            // 新留言墙的坐标默认为当前坐标
+            addedLatitude = currentLatitude;
+            addedLongitude = currentLongitude;
+
+            if (null == addedMarker) {
+                dragMarkerOptions.position(new LatLng(currentLatitude, currentLongitude));
+                dragMarkerOptions.title("新留言墙");
+                dragMarkerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
+                dragMarkerOptions.draggable(true);
+
+                addedMarker = amap.addMarker(dragMarkerOptions);
+
+            } else if (!addedMarker.isVisible()) {
+                addedMarker.setVisible(true);
+            }
+            amap.setOnMarkerDragListener(new DragListener());
+        }
+
+
+        @Override
+        public void onClick(View v) {
+            if (v.getId() == R.id.button_create) {
+                if (0 == currentLatitude && 0 == currentLongitude) {
+                    Toast.makeText(context, "还没定位，请先定位", Toast.LENGTH_LONG).show();
+                    return;
+                }
+                initOptions();
+                changeState();
+
+            }
+            if (v.getId() == R.id.button_confirm_create) {
+                confirmDialog.show();
+            }
+            if (v.getId() == R.id.button_cancel_create) {
+                cancelDialog.show();
+            }
+        }
+    }
+
+    // 标记拖拽监听
+    class DragListener implements AMap.OnMarkerDragListener {
+        @Override
+        public void onMarkerDrag(Marker marker) {
+
+        }
+
+        @Override
+        public void onMarkerDragStart(Marker marker) {
+            marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.arrow));
+        }
+
+        @Override
+        public void onMarkerDragEnd(Marker marker) {
+            addedLatitude = marker.getPosition().latitude;
+            addedLongitude  = marker.getPosition().longitude;
+            marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
+        }
     }
 }

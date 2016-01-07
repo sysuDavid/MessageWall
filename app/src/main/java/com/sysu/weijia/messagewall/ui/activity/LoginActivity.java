@@ -76,6 +76,7 @@ public class LoginActivity extends AppCompatActivity implements LoginView{
             Intent intent = new Intent();
             intent.setClass(context, RegisterActivity.class);
             startActivity(intent);
+            finish();
         }
     }
 

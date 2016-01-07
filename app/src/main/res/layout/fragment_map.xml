@@ -4,12 +4,62 @@
     android:layout_height="match_parent"
     tools:context="com.sysu.weijia.messagewall.ui.fragment.MapFragment">
 
-    <com.amap.api.maps2d.MapView
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/map"
-        android:layout_below="@id/toolbar_main">
+        android:layout_height="match_parent">
+        <com.amap.api.maps2d.MapView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/map"
+            android:layout_above="@+id/textView_tip"
+            android:layout_below="@id/toolbar_main" >
 
-    </com.amap.api.maps2d.MapView>
+        </com.amap.api.maps2d.MapView>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/textView_tip"
+            android:text="@string/tip_create"
+            android:gravity="center"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentRight="true"
+            android:layout_above="@+id/button_create"/>
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/create_subject"
+            android:id="@+id/button_create"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:background="@color/colorAccent"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_alignParentBottom="true">
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:id="@+id/button_cancel_create"
+                android:text="@string/cancel"
+                android:visibility="invisible" />
+            <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:id="@+id/button_confirm_create"
+                android:text="@string/confirm"
+                android:background="@color/colorAccent"
+                android:visibility="invisible" />
+        </LinearLayout>
+
+
+    </RelativeLayout>
+
 
 </FrameLayout>

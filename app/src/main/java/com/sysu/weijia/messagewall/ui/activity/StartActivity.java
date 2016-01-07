@@ -34,6 +34,7 @@ public class StartActivity extends AppCompatActivity {
                         intent.setClass(context, MainActivity.class);
                     }
                     startActivity(intent);
+                    finish();
                 } catch (InterruptedException e) {
 
                 }

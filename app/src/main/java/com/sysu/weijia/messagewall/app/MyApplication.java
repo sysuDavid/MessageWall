@@ -5,6 +5,7 @@ import android.app.Application;
 import com.avos.avoscloud.AVOSCloud;
 import com.avos.avoscloud.AVObject;
 import com.sysu.weijia.messagewall.R;
+import com.sysu.weijia.messagewall.model.entity.Subject;
 import com.sysu.weijia.messagewall.model.entity.User;
 
 /**
@@ -25,6 +26,7 @@ public class MyApplication extends Application {
     public void onCreate() {
         super.onCreate();
         AVObject.registerSubclass(User.class);
+        AVObject.registerSubclass(Subject.class);
         AVOSCloud.initialize(this, getString(R.string.LeanCloud_APP_ID).toString(), getString(R.string.LeanCloud_APP_Key).toString());
     }
 }

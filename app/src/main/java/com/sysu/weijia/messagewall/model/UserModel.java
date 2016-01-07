@@ -1,8 +1,8 @@
 package com.sysu.weijia.messagewall.model;
 
 import com.sysu.weijia.messagewall.model.entity.User;
-import com.sysu.weijia.messagewall.presenter.OnUserLoginListener;
-import com.sysu.weijia.messagewall.presenter.OnUserRegisterListener;
+import com.sysu.weijia.messagewall.presenter.listener.OnUserLoginListener;
+import com.sysu.weijia.messagewall.presenter.listener.OnUserRegisterListener;
 
 /**
  * Created by weijia on 16-1-6.

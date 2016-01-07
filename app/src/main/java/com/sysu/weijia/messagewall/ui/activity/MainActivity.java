@@ -30,10 +30,12 @@ import com.sysu.weijia.messagewall.ui.fragment.ListFragment;
 import com.sysu.weijia.messagewall.ui.fragment.MapFragment;
 
 public class MainActivity extends AppCompatActivity{
+    // MainActivity主要处理菜单栏按钮处理事件
 
     private MapFragment mapFragment;
     private ListFragment listFragment;
     private Context context;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,7 +43,6 @@ public class MainActivity extends AppCompatActivity{
         Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar_main);
         setSupportActionBar(toolbar);
         context = this;
-        leancloudTest();
         setDefaultFragment();
     }
 
@@ -53,16 +54,6 @@ public class MainActivity extends AppCompatActivity{
         transaction.commit();
     }
 
-    public void leancloudTest() {
-        AVObject testObject = new AVObject("TestObject");
-        testObject.put("key", "bar");
-        testObject.saveInBackground(new SaveCallback() {
-            @Override
-            public void done(AVException e) {
-                Log.i("yuan", "object upload succeed");
-            }
-        });
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
