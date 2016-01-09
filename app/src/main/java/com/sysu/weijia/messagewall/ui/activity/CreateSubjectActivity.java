@@ -23,13 +23,21 @@ import com.amap.api.services.geocoder.GeocodeResult;
 import com.amap.api.services.geocoder.GeocodeSearch;
 import com.amap.api.services.geocoder.RegeocodeQuery;
 import com.amap.api.services.geocoder.RegeocodeResult;
+import com.avos.avoscloud.AVException;
+import com.avos.avoscloud.AVGeoPoint;
+import com.avos.avoscloud.AVObject;
+import com.avos.avoscloud.AVQuery;
 import com.avos.avoscloud.AVUser;
+import com.avos.avoscloud.FindCallback;
+import com.avos.avoscloud.GetCallback;
 import com.sysu.weijia.messagewall.R;
 import com.sysu.weijia.messagewall.model.entity.Subject;
 import com.sysu.weijia.messagewall.model.entity.User;
 import com.sysu.weijia.messagewall.presenter.SubjectPresenter;
 import com.sysu.weijia.messagewall.presenter.impl.SubjectPresenterImpl;
 import com.sysu.weijia.messagewall.ui.view.CreateSubjectView;
+
+import java.util.List;
 
 public class CreateSubjectActivity extends AppCompatActivity implements GeocodeSearch.OnGeocodeSearchListener,
         CreateSubjectView {
@@ -43,12 +51,16 @@ public class CreateSubjectActivity extends AppCompatActivity implements GeocodeS
 
     private String defaultAddress;
 
+    private AVUser currentUser;
     // 逆地理编码
     private GeocodeSearch geocodeSearch;
     private LatLonPoint latLonPoint;
 
     // mvp的presenter
     private SubjectPresenter subjectPresenter;
+
+    // 测试
+    private String testSubTitle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -169,7 +181,8 @@ public class CreateSubjectActivity extends AppCompatActivity implements GeocodeS
             } else if (introductionEditText.getText().toString().isEmpty()) {
                 Toast.makeText(this, "简介不能为空", Toast.LENGTH_LONG).show();
             } else {
-                subjectPresenter.addSuject();
+                subjectPresenter.setCurrentUserAsCreator();
+                //subjectPresenter.addSuject();
             }
         }
         return super.onOptionsItemSelected(item);
@@ -185,16 +198,26 @@ public class CreateSubjectActivity extends AppCompatActivity implements GeocodeS
     }
 
     @Override
-    public Subject getSubject() {
+    public void currentUserAsCreator(AVUser avUser) {
+        currentUser = avUser;
+        subjectPresenter.addSuject();
+    }
+
+    @Override
+    public Subject newSubject() {
         Subject subject = new Subject();
         subject.setTitle(titleEditText.getText().toString());
         subject.setAddress(addressEditText.getText().toString());
         subject.setIntroduction(introductionEditText.getText().toString());
-        subject.setLatitude(latLonPoint.getLatitude());
-        subject.setLongitude(latLonPoint.getLongitude());
-        // 不能强制类型转换
-//        User user = (User)AVUser.getCurrentUser();
-//        subject.setCreator(user);
+        subject.setLocation(new AVGeoPoint(latLonPoint.getLatitude(), latLonPoint.getLongitude()));
+        if (currentUser != null)
+            subject.setCreator(currentUser);
+        else
+            Log.i("yuan", "currentUser is null");
+
+        // 测试
+        testSubTitle = titleEditText.getText().toString();
+
         return subject;
     }
 
@@ -206,6 +229,35 @@ public class CreateSubjectActivity extends AppCompatActivity implements GeocodeS
     @Override
     public void onSuccess() {
         loadingProgressDialog.dismiss();
+        // 测试creator 是否添加
+        AVQuery<AVObject> query = new AVQuery<AVObject>("Subject");
+        query.whereEqualTo("title", testSubTitle);
+        query.findInBackground(new FindCallback<AVObject>() {
+            @Override
+            public void done(List<AVObject> list, AVException e) {
+                if (e == null) {
+                    if (!list.isEmpty()) {
+                        AVObject sub = list.get(0);
+                        if (sub != null) {
+                            sub.getAVObject("creator")
+                                    .fetchIfNeededInBackground(new GetCallback<AVObject>() {
+                                        @Override
+                                        public void done(AVObject avObject, AVException e) {
+                                            if (e == null) {
+                                                Log.i("yuan", "creator test: " + avObject.get("nickname"));
+                                            } else {
+                                                Log.i("yuan", "creator fetch error: " + e.getMessage());
+                                            }
+                                        }
+                                    });
+                        }
+                    }
+                } else {
+                    Log.i("yuan", "creator test error: " + e.getMessage());
+                }
+            }
+        });
+
         Toast.makeText(this, "上传成功", Toast.LENGTH_LONG).show();
         onBackPressed();
     }
@@ -213,6 +265,7 @@ public class CreateSubjectActivity extends AppCompatActivity implements GeocodeS
     @Override
     public void onError(String error) {
         loadingProgressDialog.dismiss();
+        Log.i("yuan", "addsubject error: "+error);
         Toast.makeText(this, error, Toast.LENGTH_LONG).show();
     }
 }

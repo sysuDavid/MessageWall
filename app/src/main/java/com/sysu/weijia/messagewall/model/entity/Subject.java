@@ -4,7 +4,9 @@ import android.os.Parcel;
 
 import com.avos.avoscloud.AVClassName;
 import com.avos.avoscloud.AVException;
+import com.avos.avoscloud.AVGeoPoint;
 import com.avos.avoscloud.AVObject;
+import com.avos.avoscloud.AVUser;
 import com.avos.avoscloud.GetCallback;
 
 /**
@@ -18,9 +20,8 @@ public class Subject extends AVObject{
     private String title;
     private String address;
     private String introduction;
-    private double latitude;
-    private double longitude;
-    private User creator;
+    private AVGeoPoint location;
+    private AVUser creator;
 
     public Subject() {
 
@@ -40,15 +41,11 @@ public class Subject extends AVObject{
         introduction = d;
         put("introduction", introduction);
     }
-    public void setLatitude(double la) {
-        latitude = la;
-        put("latitude", latitude);
+    public void setLocation(AVGeoPoint p) {
+        location = p;
+        put("location", location);
     }
-    public void setLongitude(double lo) {
-        longitude = lo;
-        put("longitude", longitude);
-    }
-    public void setCreator(User c) {
+    public void setCreator(AVUser c) {
         creator = c;
         put("creator", creator);
     }
@@ -64,20 +61,18 @@ public class Subject extends AVObject{
         introduction = getString("introduction");
         return introduction;
     }
-    public double getLatitude() {
-        latitude = getDouble("latitude");
-        return latitude;
+    public AVGeoPoint getLocation() {
+        location = (AVGeoPoint)get("location");
+        return location;
     }
-    public double getLongitude() {
-        longitude = getDouble("longitude");
-        return longitude;
-    }
-    public User getCreator() {
+    public AVUser getCreator() {
+        // 向下转型，可能会出错
+        // 如果是查找得到的对象，是AVObject类型的，无法调用此函数
         getAVObject("creator").fetchInBackground(new GetCallback<AVObject>() {
             @Override
             public void done(AVObject avObject, AVException e) {
                 if (e == null) {
-                    creator = (User)avObject;
+                    creator = (AVUser)avObject;
                 }
             }
         });

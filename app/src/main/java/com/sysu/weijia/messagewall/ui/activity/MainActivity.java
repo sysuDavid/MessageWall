@@ -26,15 +26,24 @@ import com.avos.avoscloud.AVObject;
 import com.avos.avoscloud.AVUser;
 import com.avos.avoscloud.SaveCallback;
 import com.sysu.weijia.messagewall.R;
+import com.sysu.weijia.messagewall.model.entity.Subject;
+import com.sysu.weijia.messagewall.presenter.SubjectPresenter;
+import com.sysu.weijia.messagewall.presenter.impl.SubjectPresenterImpl;
 import com.sysu.weijia.messagewall.ui.fragment.ListFragment;
 import com.sysu.weijia.messagewall.ui.fragment.MapFragment;
+import com.sysu.weijia.messagewall.ui.view.GetSubjectsView;
 
-public class MainActivity extends AppCompatActivity{
+import java.util.List;
+
+public class MainActivity extends AppCompatActivity implements GetSubjectsView{
     // MainActivity主要处理菜单栏按钮处理事件
 
     private MapFragment mapFragment;
     private ListFragment listFragment;
     private Context context;
+
+    private List<AVObject> mSubjectList;
+    private SubjectPresenter mSubjectPresenter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +53,7 @@ public class MainActivity extends AppCompatActivity{
         setSupportActionBar(toolbar);
         context = this;
         setDefaultFragment();
+        mSubjectPresenter = new SubjectPresenterImpl(this);
     }
 
     public void setDefaultFragment() {
@@ -99,6 +109,7 @@ public class MainActivity extends AppCompatActivity{
                             Intent intent = new Intent();
                             intent.setClass(context, LoginActivity.class);
                             startActivity(intent);
+                            finish();
                         }
                     })
                     .setNegativeButton("取消", new DialogInterface.OnClickListener() {
@@ -110,5 +121,19 @@ public class MainActivity extends AppCompatActivity{
                     .create().show();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void setNearSubjects(List<AVObject> list) {
+        mSubjectList = list;
+        mapFragment.setNearSubjectsMarker();
+    }
+
+    public void startGetSubjects() {
+        mSubjectPresenter.getSubjectList(mapFragment.currentLocation());
+    }
+
+    public List<AVObject> getMySubjectList() {
+        return mSubjectList;
     }
 }

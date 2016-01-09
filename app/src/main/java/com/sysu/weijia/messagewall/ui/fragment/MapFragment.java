@@ -5,12 +5,17 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.app.Fragment;
+import android.os.Handler;
+import android.os.SystemClock;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.util.Log;
+import android.view.animation.BounceInterpolator;
+import android.view.animation.Interpolator;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -23,14 +28,22 @@ import com.amap.api.maps2d.AMap;
 import com.amap.api.maps2d.CameraUpdateFactory;
 import com.amap.api.maps2d.LocationSource;
 import com.amap.api.maps2d.MapView;
+import com.amap.api.maps2d.Projection;
 import com.amap.api.maps2d.model.BitmapDescriptorFactory;
 import com.amap.api.maps2d.model.LatLng;
 import com.amap.api.maps2d.model.Marker;
 import com.amap.api.maps2d.model.MarkerOptions;
 import com.amap.api.maps2d.model.MyLocationStyle;
+import com.avos.avoscloud.AVGeoPoint;
+import com.avos.avoscloud.AVObject;
+import com.avos.avoscloud.AVUser;
 import com.sysu.weijia.messagewall.R;
+import com.sysu.weijia.messagewall.model.entity.Subject;
 import com.sysu.weijia.messagewall.ui.activity.CreateSubjectActivity;
+import com.sysu.weijia.messagewall.ui.activity.MainActivity;
 import com.sysu.weijia.messagewall.ui.view.LoginView;
+
+import java.util.ArrayList;
 
 public class MapFragment extends Fragment implements LocationSource, AMapLocationListener{
     // 地图显示变量
@@ -54,10 +67,14 @@ public class MapFragment extends Fragment implements LocationSource, AMapLocatio
     private Button confirmButton;
     private Button cancelButton;
     private TextView tipTextView;
+
     private Context context;
+    private MainActivity parentActivity;
 
     private Dialog confirmDialog;
     private Dialog cancelDialog;
+
+    private ArrayList<Marker> markerArrayList;
 
     public MapFragment() {
         // Required empty public constructor
@@ -81,13 +98,15 @@ public class MapFragment extends Fragment implements LocationSource, AMapLocatio
         // 设置缩放级别：3~20
         amap.moveCamera(CameraUpdateFactory.zoomTo(16));
 
-        init(view);
+        amap.setOnMarkerClickListener(new MarkerClickListener());
 
+        init(view);
         return view;
     }
 
     public void init(View view) {
         context = getActivity();
+        parentActivity = (MainActivity)getActivity();
         createButton = (Button)view.findViewById(R.id.button_create);
         confirmButton = (Button)view.findViewById(R.id.button_confirm_create);
         cancelButton = (Button)view.findViewById(R.id.button_cancel_create);
@@ -206,6 +225,8 @@ public class MapFragment extends Fragment implements LocationSource, AMapLocatio
             mLocationClient.setLocationListener(this);
             mLocationCLientOption = new AMapLocationClientOption();
             mLocationCLientOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);
+            //mLocationCLientOption.setInterval(20000);
+            mLocationCLientOption.setOnceLocation(true);
             mLocationClient.setLocationOption(mLocationCLientOption);
             mLocationClient.startLocation();
         }
@@ -229,6 +250,8 @@ public class MapFragment extends Fragment implements LocationSource, AMapLocatio
                 currentLatitude = aMapLocation.getLatitude();
                 currentLongitude = aMapLocation.getLongitude();
                 Log.i("yuan", "currentLatitude: " + currentLatitude + ", currentLongitude: " + currentLongitude);
+
+                parentActivity.startGetSubjects();
                 mLocationChangeListener.onLocationChanged(aMapLocation);
             }
         }
@@ -314,6 +337,86 @@ public class MapFragment extends Fragment implements LocationSource, AMapLocatio
             addedLatitude = marker.getPosition().latitude;
             addedLongitude  = marker.getPosition().longitude;
             marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
+        }
+    }
+
+    class MarkerClickListener implements AMap.OnMarkerClickListener {
+        @Override
+        public boolean onMarkerClick(Marker marker) {
+            jumpPoint(marker);
+
+            return false;
+        }
+    }
+
+    class InfoWindowClickListener implements AMap.OnInfoWindowClickListener {
+        @Override
+        public void onInfoWindowClick(Marker marker) {
+
+        }
+    }
+
+    public AVGeoPoint currentLocation() {
+        return  new AVGeoPoint(currentLatitude, currentLongitude);
+    }
+
+    public void setNearSubjectsMarker() {
+        if (markerArrayList == null)
+            markerArrayList = new ArrayList<Marker>();
+        for (AVObject avObject : parentActivity.getMySubjectList()) {
+            Subject subject = (Subject)avObject;
+            AVGeoPoint point = (AVGeoPoint)subject.get("location");
+            MarkerOptions options = new MarkerOptions();
+            options.position(new LatLng(subject.getLocation().getLatitude(), subject.getLocation().getLongitude()));
+            options.title(subject.getTitle());
+            options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+            Marker marker = amap.addMarker(options);
+            markerArrayList.add(marker);
+        }
+    }
+
+    /**
+     * marker点击时跳动一下
+     */
+    public void jumpPoint(final Marker marker) {
+        if (marker.isInfoWindowShown())
+            return;
+        final Handler handler = new Handler();
+        final long start = SystemClock.uptimeMillis();
+        Projection proj = amap.getProjection();
+        final LatLng latLng = marker.getPosition();
+        Point startPoint = proj.toScreenLocation(latLng);
+        startPoint.offset(0, -100);
+        final LatLng startLatLng = proj.fromScreenLocation(startPoint);
+        final long duration = 1500;
+
+        final Interpolator interpolator = new BounceInterpolator();
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                long elapsed = SystemClock.uptimeMillis() - start;
+                float t = interpolator.getInterpolation((float) elapsed
+                        / duration);
+                double lng = t * latLng.longitude + (1 - t)
+                        * startLatLng.longitude;
+                double lat = t * latLng.latitude + (1 - t)
+                        * startLatLng.latitude;
+                marker.setPosition(new LatLng(lat, lng));
+                setMarkersIcon();
+                amap.invalidate();// 刷新地图
+                if (t < 1.0) {
+                    handler.postDelayed(this, 16);
+                }
+            }
+        });
+    }
+
+    void setMarkersIcon() {
+        for (Marker marker : markerArrayList) {
+            if (marker.isInfoWindowShown())
+                marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE));
+            else
+                marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
         }
     }
 }

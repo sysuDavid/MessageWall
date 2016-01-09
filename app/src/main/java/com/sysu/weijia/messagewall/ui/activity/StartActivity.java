@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.avos.avoscloud.AVUser;
 import com.sysu.weijia.messagewall.R;
@@ -29,6 +30,7 @@ public class StartActivity extends AppCompatActivity {
                     Thread.sleep(2000);
                     Intent intent = new Intent();
                     if (AVUser.getCurrentUser() == null) {
+
                         intent.setClass(context, LoginActivity.class);
                     } else {
                         intent.setClass(context, MainActivity.class);
