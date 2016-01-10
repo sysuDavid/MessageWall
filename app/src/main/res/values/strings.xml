@@ -22,8 +22,12 @@
     <string name="confirm">确定</string>
     <string name="address_default">某个地址</string>
     <string name="default_reset">默认地址</string>
-    <string name="subject_name">标题</string>
+    <string name="subject_title">标题</string>
     <string name="introduction">简介</string>
+    <string name="introduction_default">某个简介</string>
+    <string name="check_detail">查看详情</string>
+    <string name="add_message">添加留言</string>
+
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

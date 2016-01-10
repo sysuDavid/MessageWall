@@ -6,10 +6,12 @@ import com.avos.avoscloud.AVException;
 import com.avos.avoscloud.AVQuery;
 import com.avos.avoscloud.AVUser;
 import com.avos.avoscloud.FindCallback;
+import com.avos.avoscloud.GetCallback;
 import com.avos.avoscloud.LogInCallback;
 import com.avos.avoscloud.SignUpCallback;
 import com.sysu.weijia.messagewall.model.UserModel;
 import com.sysu.weijia.messagewall.model.entity.User;
+import com.sysu.weijia.messagewall.presenter.listener.OnUserGetByIdListener;
 import com.sysu.weijia.messagewall.presenter.listener.OnUserGetListener;
 import com.sysu.weijia.messagewall.presenter.listener.OnUserLoginListener;
 import com.sysu.weijia.messagewall.presenter.listener.OnUserRegisterListener;
@@ -67,6 +69,21 @@ public class UserModelImpl implements UserModel{
                 } else {
                     Log.i("yuan", "get user error: " + e.getMessage());
                     listener.onUserGetError(e.getMessage());
+                }
+            }
+        });
+    }
+
+    @Override
+    public void getUserByObjectId(String id, final OnUserGetByIdListener listener) {
+        AVQuery<User> query = AVQuery.getQuery("_User");
+        query.getInBackground(id, new GetCallback<User>() {
+            @Override
+            public void done(User user, AVException e) {
+                if (e == null) {
+                    listener.OnUserGetByIdSuccess(user);
+                } else {
+                    listener.OnUserGetByIdError(e.getMessage());
                 }
             }
         });

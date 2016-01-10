@@ -1,9 +1,13 @@
 package com.sysu.weijia.messagewall.model.entity;
 
 import android.os.Parcel;
+import android.util.Log;
 
 import com.avos.avoscloud.AVClassName;
+import com.avos.avoscloud.AVException;
+import com.avos.avoscloud.AVQuery;
 import com.avos.avoscloud.AVUser;
+import com.avos.avoscloud.GetCallback;
 import com.avos.avoscloud.LogInCallback;
 
 /**
@@ -67,4 +71,6 @@ public class User extends AVUser {
 
     // 基类实现了Parcelable接口，这里强制必须有Creator
     public static final Creator CREATOR = AVObjectCreator.instance;
+
+
 }

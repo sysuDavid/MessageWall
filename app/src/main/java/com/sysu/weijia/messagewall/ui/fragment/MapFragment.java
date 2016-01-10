@@ -41,6 +41,7 @@ import com.sysu.weijia.messagewall.R;
 import com.sysu.weijia.messagewall.model.entity.Subject;
 import com.sysu.weijia.messagewall.ui.activity.CreateSubjectActivity;
 import com.sysu.weijia.messagewall.ui.activity.MainActivity;
+import com.sysu.weijia.messagewall.ui.adapter.MyInfoWindowAdapter;
 import com.sysu.weijia.messagewall.ui.view.LoginView;
 
 import java.util.ArrayList;
@@ -91,16 +92,18 @@ public class MapFragment extends Fragment implements LocationSource, AMapLocatio
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_map, container, false);
+        init(view);
+
         // 地图基本显示
         mapView = (MapView)view.findViewById(R.id.map);
         mapView.onCreate(savedInstanceState);
         amap = mapView.getMap();
         // 设置缩放级别：3~20
         amap.moveCamera(CameraUpdateFactory.zoomTo(16));
+        // 设置地图的自定义事件
 
-        amap.setOnMarkerClickListener(new MarkerClickListener());
+        amap.setInfoWindowAdapter(new MyInfoWindowAdapter(parentActivity));
 
-        init(view);
         return view;
     }
 
@@ -124,6 +127,7 @@ public class MapFragment extends Fragment implements LocationSource, AMapLocatio
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         recoverState();
+                        addedMarker.destroy();
                         addedMarker = null;
                         Intent intent = new Intent();
                         intent.setClass(context, CreateSubjectActivity.class);
@@ -340,6 +344,7 @@ public class MapFragment extends Fragment implements LocationSource, AMapLocatio
         }
     }
 
+    // 标记点击事件
     class MarkerClickListener implements AMap.OnMarkerClickListener {
         @Override
         public boolean onMarkerClick(Marker marker) {
@@ -371,8 +376,10 @@ public class MapFragment extends Fragment implements LocationSource, AMapLocatio
             options.title(subject.getTitle());
             options.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
             Marker marker = amap.addMarker(options);
+            marker.setObject(subject.getObjectId());
             markerArrayList.add(marker);
         }
+        amap.setOnMarkerClickListener(new MarkerClickListener());
     }
 
     /**

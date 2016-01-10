@@ -181,8 +181,10 @@ public class CreateSubjectActivity extends AppCompatActivity implements GeocodeS
             } else if (introductionEditText.getText().toString().isEmpty()) {
                 Toast.makeText(this, "简介不能为空", Toast.LENGTH_LONG).show();
             } else {
-                subjectPresenter.setCurrentUserAsCreator();
-                //subjectPresenter.addSuject();
+                //这里根本不需要获取整个User，可以使用User的objectId将两个类关联
+                //有很多代码需要删除，后期注意删除
+                //subjectPresenter.setCurrentUserAsCreator();
+                subjectPresenter.addSuject();
             }
         }
         return super.onOptionsItemSelected(item);
@@ -210,11 +212,11 @@ public class CreateSubjectActivity extends AppCompatActivity implements GeocodeS
         subject.setAddress(addressEditText.getText().toString());
         subject.setIntroduction(introductionEditText.getText().toString());
         subject.setLocation(new AVGeoPoint(latLonPoint.getLatitude(), latLonPoint.getLongitude()));
-        if (currentUser != null)
-            subject.setCreator(currentUser);
-        else
-            Log.i("yuan", "currentUser is null");
-
+//        if (currentUser != null)
+//            subject.setCreator(currentUser);
+//        else
+//            Log.i("yuan", "currentUser is null");
+        subject.setCreatorByCreatorId(AVUser.getCurrentUser().getObjectId());
         // 测试
         testSubTitle = titleEditText.getText().toString();
 

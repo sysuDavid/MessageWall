@@ -8,6 +8,7 @@ import com.avos.avoscloud.AVUser;
 import com.sysu.weijia.messagewall.model.SubjectModel;
 import com.sysu.weijia.messagewall.model.UserModel;
 import com.sysu.weijia.messagewall.model.entity.Subject;
+import com.sysu.weijia.messagewall.model.entity.User;
 import com.sysu.weijia.messagewall.model.impl.SubjectModelImpl;
 import com.sysu.weijia.messagewall.model.impl.UserModelImpl;
 import com.sysu.weijia.messagewall.presenter.SubjectPresenter;
@@ -66,9 +67,9 @@ public class SubjectPresenterImpl implements SubjectPresenter,
     }
 
     @Override
-    public void onUserGetSuccess(AVUser user) {
-        mCreateSubjectView.currentUserAsCreator(user);
-        Log.i("yuan", "get nickname: " + user.get("nickname") + " success.");
+    public void onUserGetSuccess(AVUser avUser) {
+        mCreateSubjectView.currentUserAsCreator(avUser);
+        Log.i("yuan", "get nickname: " + avUser.get("nickname") + " success.");
     }
 
     @Override
