@@ -18,37 +18,46 @@ public class Message extends AVObject {
     // 点赞数
     //private int agreeNum;
 
-    Message() {
+    public Message() {
 
     }
 
-    void setContent(String c) {
+    public void setContent(String c) {
         content = c;
         put("content", content);
     }
-    String getContent() {
+    public String getContent() {
         content = getString("content");
         return content;
     }
 
-    void setSubject(Subject s) {
+    public void setSubject(Subject s) {
         subject = s;
         put("subject", subject);
     }
 
-    void setSubjectByObjectId(String id) {
+    public Subject getSubject() {
+        subject = getAVObject("subject");
+        return subject;
+    }
+
+    public void setSubjectByObjectId(String id) {
         put("subject", AVObject.createWithoutData("Subject", id));
     }
 
     // 子类对象get方法不能向下转型，故不写
     // getSubject(), getUser()不写
 
-    void setUser(User u) {
+    public void setUser(User u) {
         user = u;
         put("user", user);
     }
 
-    void setUserByObjectId(String id) {
+    public User getUser() {
+        user = (User)getAVUser("user");
+        return user;
+    }
+    public void setUserByObjectId(String id) {
         put("user", AVUser.createWithoutData("_User", id));
     }
 

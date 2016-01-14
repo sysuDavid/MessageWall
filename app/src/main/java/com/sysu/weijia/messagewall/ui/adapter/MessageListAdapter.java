@@ -1,9 +1,23 @@
 package com.sysu.weijia.messagewall.ui.adapter;
 
 import android.content.Context;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.TextView;
+
+import com.sysu.weijia.messagewall.R;
+import com.sysu.weijia.messagewall.model.entity.Message;
+
+import org.w3c.dom.Text;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.zip.Inflater;
 
 /**
  * Created by weijia on 16-1-10.
@@ -11,27 +25,48 @@ import android.widget.BaseAdapter;
 public class MessageListAdapter extends BaseAdapter {
 
     private Context context;
-    public MessageListAdapter(Context c) {
+    private List<Message> messageList;
+    private TextView nicknameTextView;
+    private TextView timeTextView;
+    private TextView contentTextView;
+    public MessageListAdapter(Context c, List<Message> list) {
         context = c;
+        messageList = list;
     }
     @Override
     public int getCount() {
-        return 0;
+        return messageList.size();
     }
 
     @Override
-    public Object getItem(int position) {
-        return null;
+    public Message getItem(int position) {
+        return messageList.get(position);
     }
 
     @Override
     public long getItemId(int position) {
-        return 0;
+        return position;
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        return null;
+        if (convertView == null) {
+            LayoutInflater inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            convertView = inflater.inflate(R.layout.message_item, null);
+            nicknameTextView = (TextView)convertView.findViewById(R.id.textView_nickname);
+            timeTextView = (TextView)convertView.findViewById(R.id.textView_time);
+            contentTextView = (TextView)convertView.findViewById(R.id.texiView_content);
+        }
+        Message message = messageList.get(position);
+        nicknameTextView.setText(message.getUser().getNickname());
+        String dateString;
+        Date date = message.getCreatedAt();
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        dateString = dateFormat.format(date);
+        timeTextView.setText(dateString);
+        contentTextView.setText(message.getContent());
+
+        return convertView;
     }
 
 

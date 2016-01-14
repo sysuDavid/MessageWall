@@ -6,6 +6,7 @@ import com.avos.avoscloud.AVOSCloud;
 import com.avos.avoscloud.AVObject;
 import com.avos.avoscloud.AVUser;
 import com.sysu.weijia.messagewall.R;
+import com.sysu.weijia.messagewall.model.entity.Message;
 import com.sysu.weijia.messagewall.model.entity.Subject;
 import com.sysu.weijia.messagewall.model.entity.User;
 
@@ -29,6 +30,7 @@ public class MyApplication extends Application {
         AVObject.registerSubclass(User.class);
         AVObject.registerSubclass(Subject.class);
         AVUser.alwaysUseSubUserClass(User.class);
+        AVObject.registerSubclass(Message.class);
         AVOSCloud.initialize(this, getString(R.string.LeanCloud_APP_ID).toString(), getString(R.string.LeanCloud_APP_Key).toString());
     }
 }

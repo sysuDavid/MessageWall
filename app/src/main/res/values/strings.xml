@@ -27,6 +27,11 @@
     <string name="introduction_default">某个简介</string>
     <string name="check_detail">查看详情</string>
     <string name="add_message">添加留言</string>
+    <string name="nickname_default">某个昵称</string>
+    <string name="time_default">2016-01-01</string>
+    <string name="content_default">某个留言</string>
+    <string name="message_empty">暂无留言</string>
+
 
 
     <!-- TODO: Remove or change this placeholder text -->

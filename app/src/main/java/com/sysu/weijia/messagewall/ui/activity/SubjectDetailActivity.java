@@ -6,12 +6,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.avos.avoscloud.AVObject;
 import com.avos.avoscloud.AVQuery;
@@ -25,11 +28,14 @@ import com.sysu.weijia.messagewall.presenter.impl.MessagePresenterImpl;
 import com.sysu.weijia.messagewall.ui.adapter.MessageListAdapter;
 import com.sysu.weijia.messagewall.ui.view.MessageView;
 
+import java.util.List;
+
 public class SubjectDetailActivity extends AppCompatActivity implements MessageView {
 
     private TextView titleTextView;
     private TextView addressTextView;
     private TextView introductionTextView;
+    private TextView messageEmptyTextView;
     private EditText messageEditText;
     private Button addMessageButton;
     private ListView listView;
@@ -43,12 +49,12 @@ public class SubjectDetailActivity extends AppCompatActivity implements MessageV
     private Subject mSubject;
     private User mUser;
 
+    private List<Message> messagesList;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_subject_detail);
-        // 设置刚进入的时候EditText的`软键盘不要弹出
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         context = this;
         mMessagePresenter = new MessagePresenterImpl(this);
         initView();
@@ -58,9 +64,7 @@ public class SubjectDetailActivity extends AppCompatActivity implements MessageV
         subjectId = getSubjectIdFromIntent();
         currentUserId = AVUser.getCurrentUser().getObjectId();
         getSubjectById();
-        getUserById();
-        // 设置listView
-        listView.setAdapter(new MessageListAdapter(this));
+
         // 设置button事件
         addMessageButton.setOnClickListener(new AddMessageButtonClickListener());
     }
@@ -69,6 +73,7 @@ public class SubjectDetailActivity extends AppCompatActivity implements MessageV
         titleTextView = (TextView)findViewById(R.id.textView_title_detail);
         addressTextView = (TextView)findViewById(R.id.textView_address_detail);
         introductionTextView = (TextView)findViewById(R.id.textView_introduction_detail);
+        messageEmptyTextView = (TextView)findViewById(R.id.textView_message_empty);
         messageEditText = (EditText)findViewById(R.id.editText_message);
         addMessageButton = (Button)findViewById(R.id.button_add_message);
         listView = (ListView)findViewById(R.id.listView_message);
@@ -97,7 +102,6 @@ public class SubjectDetailActivity extends AppCompatActivity implements MessageV
 
     void setView() {
         if (mSubject!= null) {
-            Log.i("yuan", "subject title: " + mSubject.getTitle());
             titleTextView.setText(mSubject.getTitle());
             addressTextView.setText(mSubject.getAddress());
             introductionTextView.setText(mSubject.getIntroduction());
@@ -108,13 +112,33 @@ public class SubjectDetailActivity extends AppCompatActivity implements MessageV
     class AddMessageButtonClickListener implements View.OnClickListener {
         @Override
         public void onClick(View v) {
-
+            if (messageEditText.getText().toString().isEmpty()) {
+                Toast.makeText(context, "留言不能为空", Toast.LENGTH_LONG).show();
+            } else {
+                mMessagePresenter.addMessage();
+                messageEditText.clearFocus();
+            }
         }
     }
 
     @Override
     public Message newMessage() {
-        return null;
+        Message message = new Message();
+        message.setContent(messageEditText.getText().toString());
+        message.setSubjectByObjectId(subjectId);
+        message.setUserByObjectId(currentUserId);
+        return message;
+    }
+
+    @Override
+    public void onUploadMessageSuccess() {
+        messageEditText.setText("");
+        getMessageOfSubject();
+    }
+
+    @Override
+    public void onUploadMessageError(String error) {
+        Log.i("yuan", "add message error: " + error);
     }
 
     @Override
@@ -123,14 +147,15 @@ public class SubjectDetailActivity extends AppCompatActivity implements MessageV
     }
 
     @Override
-    public void OnGetSubjectSuccess(Subject subject) {
+    public void onGetSubjectSuccess(Subject subject) {
         mSubject = subject;
         // 设置每个view的值
         setView();
+        getMessageOfSubject();
     }
 
     @Override
-    public void OnGetSubjectError(String error) {
+    public void onGetSubjectError(String error) {
         Log.i("yuan", "OnGetSubjectError: " + error);
     }
 
@@ -140,13 +165,43 @@ public class SubjectDetailActivity extends AppCompatActivity implements MessageV
     }
 
     @Override
-    public void OnGetUserSuccess(User user) {
+    public void onGetUserSuccess(User user) {
         mUser = user;
-        Log.i("yuan", "user nickname: " + mUser.getNickname());
     }
 
     @Override
-    public void OnGetUserError(String error) {
+    public void onGetUserError(String error) {
         Log.i("yuan", "OnGetUserError: " + error);
+    }
+
+    @Override
+    public void getMessageOfSubject() {
+        mMessagePresenter.getMessageOfSubject(mSubject);
+    }
+
+    @Override
+    public void onGetMessageSuccess(List<Message> list) {
+        messagesList = list;
+        // 设置listView
+        if (messagesList != null) {
+            listView.setAdapter(new MessageListAdapter(this, messagesList));
+        } else {
+            messageEmptyTextView.setVisibility(View.VISIBLE);
+        }
+    }
+
+    @Override
+    public void onGetMessageError(String error) {
+        Log.i("yuan", "onGetMessageError: " + error);
+    }
+
+    // 点击非文本框位置，隐藏软键盘
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if (null != this.getCurrentFocus()) {
+            InputMethodManager inputMethodManager = (InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
+            return inputMethodManager.hideSoftInputFromWindow(this.getCurrentFocus().getWindowToken(), 0);
+        }
+        return super.onTouchEvent(event);
     }
 }
