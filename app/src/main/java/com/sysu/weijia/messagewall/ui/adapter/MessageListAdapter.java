@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.sysu.weijia.messagewall.R;
@@ -29,6 +30,8 @@ public class MessageListAdapter extends BaseAdapter {
     private TextView nicknameTextView;
     private TextView timeTextView;
     private TextView contentTextView;
+    private RelativeLayout likeLayout;
+    private TextView likeNumTextView;
     public MessageListAdapter(Context c, List<Message> list) {
         context = c;
         messageList = list;
@@ -50,13 +53,15 @@ public class MessageListAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        if (convertView == null) {
+        //if (convertView == null) {
             LayoutInflater inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = inflater.inflate(R.layout.message_item, null);
             nicknameTextView = (TextView)convertView.findViewById(R.id.textView_nickname);
             timeTextView = (TextView)convertView.findViewById(R.id.textView_time);
             contentTextView = (TextView)convertView.findViewById(R.id.texiView_content);
-        }
+            likeLayout = (RelativeLayout)convertView.findViewById(R.id.layout_like);
+            likeNumTextView = (TextView)convertView.findViewById(R.id.textView_likeNum);
+        //}
         Message message = messageList.get(position);
         nicknameTextView.setText(message.getUser().getNickname());
         String dateString;
@@ -65,7 +70,13 @@ public class MessageListAdapter extends BaseAdapter {
         dateString = dateFormat.format(date);
         timeTextView.setText(dateString);
         contentTextView.setText(message.getContent());
-
+        int likeNum = message.getLikeNum();
+        likeNumTextView.setText(String.valueOf(likeNum));
+        if (likeNum != 0) {
+            likeLayout.setVisibility(View.VISIBLE);
+        } else {
+            likeLayout.setVisibility(View.INVISIBLE);
+        }
         return convertView;
     }
 

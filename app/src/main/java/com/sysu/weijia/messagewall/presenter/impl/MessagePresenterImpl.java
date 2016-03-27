@@ -13,7 +13,10 @@ import com.sysu.weijia.messagewall.model.impl.SubjectModelImpl;
 import com.sysu.weijia.messagewall.model.impl.UserModelImpl;
 import com.sysu.weijia.messagewall.presenter.MessagePresenter;
 import com.sysu.weijia.messagewall.presenter.listener.OnMessageAddListener;
+import com.sysu.weijia.messagewall.presenter.listener.OnMessageDeleteListener;
 import com.sysu.weijia.messagewall.presenter.listener.OnMessageGetOfSubjectListener;
+import com.sysu.weijia.messagewall.presenter.listener.OnMessageLikeListener;
+import com.sysu.weijia.messagewall.presenter.listener.OnMessageLikeWithdrawListener;
 import com.sysu.weijia.messagewall.presenter.listener.OnSubjectGetByIdListener;
 import com.sysu.weijia.messagewall.presenter.listener.OnUserGetByIdListener;
 import com.sysu.weijia.messagewall.ui.view.MessageView;
@@ -24,7 +27,8 @@ import java.util.List;
  * Created by weijia on 16-1-10.
  */
 public class MessagePresenterImpl implements MessagePresenter, OnMessageGetOfSubjectListener,
-        OnMessageAddListener, OnSubjectGetByIdListener, OnUserGetByIdListener {
+        OnMessageAddListener, OnSubjectGetByIdListener, OnUserGetByIdListener,
+        OnMessageLikeListener, OnMessageDeleteListener, OnMessageLikeWithdrawListener {
 
     private MessageModel mMessageModel;
     private SubjectModel mSubjectModel;
@@ -99,5 +103,51 @@ public class MessagePresenterImpl implements MessagePresenter, OnMessageGetOfSub
     @Override
     public void onMessageGetOfSubjectError(String error) {
         mMessageView.onGetMessageError(error);
+    }
+
+    @Override
+    public void deleteMessage(Message message) {
+        mMessageModel.deleteMessage(message, this);
+    }
+
+
+    @Override
+    public void onMessageDeleteSuccess() {
+        mMessageView.onDeleteMessageSuccess();
+    }
+
+    @Override
+    public void onMessageDeleteError(String error) {
+        mMessageView.onDeleteMessageError(error);
+    }
+
+    @Override
+    public void likeMessage(Message message) {
+        mMessageModel.likeMessage(message, this);
+    }
+
+    @Override
+    public void onMessageLikeSuccess() {
+        mMessageView.onLikeMessageSuccess();
+    }
+
+    @Override
+    public void onMessageLikeError(String error) {
+        mMessageView.onLikeMessageError(error);
+    }
+
+    @Override
+    public void withdrawLikeMessage(Message message) {
+        mMessageModel.withdrawLikeMessage(message, this);
+    }
+
+    @Override
+    public void onMessageLikeWithdrawSuccess() {
+        mMessageView.onWithdrawLikeMessageSuccess();
+    }
+
+    @Override
+    public void onMessageLikeWithdrawError(String error) {
+        mMessageView.onWithdrawLikeMessageError(error);
     }
 }

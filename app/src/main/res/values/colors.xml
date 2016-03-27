@@ -6,4 +6,5 @@
     <color name="textColorPrimary">#FFFFFF</color>
     <color name="textColor">#000000</color>
     <color name="background">#e0f7fa</color>
+    <color name="actionMeneTextColor">#FFFFFF</color>
 </resources>

@@ -6,6 +6,9 @@ import com.avos.avoscloud.AVObject;
 import com.avos.avoscloud.AVUser;
 import com.avos.avoscloud.GetCallback;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by weijia on 16-1-10.
  */
@@ -13,13 +16,16 @@ import com.avos.avoscloud.GetCallback;
 @AVClassName("Message")
 public class Message extends AVObject {
     private String content;
+    private int likeNum;
     private Subject subject;
     private User user;
+    private ArrayList<User> likeUsers;
+
     // 点赞数
     //private int agreeNum;
 
     public Message() {
-
+        likeUsers = new ArrayList<User>();
     }
 
     public void setContent(String c) {
@@ -31,12 +37,31 @@ public class Message extends AVObject {
         return content;
     }
 
+    public void putLikeNum() {
+        put("likeNum", 0);
+    }
+    public void incrementLikeNum() {
+        increment("likeNum");
+    }
+    public void setUserLike() {
+
+    }
+    public void decrementLikeNum() {
+        increment("likeNum", -1);
+
+    }
+    public int getLikeNum() {
+        likeNum = getInt("likeNum");
+        return likeNum;
+    }
+
     public void setSubject(Subject s) {
         subject = s;
         put("subject", subject);
     }
 
     public Subject getSubject() {
+
         subject = getAVObject("subject");
         return subject;
     }

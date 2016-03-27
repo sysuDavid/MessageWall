@@ -2,7 +2,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:paddingTop="10dp"
+    android:paddingBottom="10dp">
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -11,14 +13,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/nickname_default"
-            android:textColor="@color/textColor"/>
+            android:textColor="#003366"
+            android:textStyle="bold"
+            android:textSize="18sp" />
         <TextView
             android:id="@+id/textView_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:text="@string/time_default"
-            android:textColor="@color/textColor"/>
+            android:textColor="#444444"
+            android:textSize="15sp" />
     </RelativeLayout>
     <TextView
         android:id="@+id/texiView_content"
@@ -26,5 +31,30 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="5dp"
         android:text="@string/content_default"
-        android:textColor="@color/textColor"/>
+        android:textColor="@color/textColor"
+        android:textSize="19sp" />
+    <RelativeLayout
+        android:id="@+id/layout_like"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="visible">
+        <TextView
+            android:id="@+id/textView_likeNum"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@+id/like"
+            android:text="-1"
+            android:textColor="@color/textColor"
+            android:textSize="15sp"/>
+        <TextView
+            android:id="@+id/like"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:text=" 赞"
+            android:textColor="@color/textColor"
+            android:textSize="15sp"/>
+
+    </RelativeLayout>
+
 </LinearLayout>

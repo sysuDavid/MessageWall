@@ -22,4 +22,10 @@ public interface MessageView {
     void getUserById();
     void onGetUserSuccess(User user);
     void onGetUserError(String error);
+    void onLikeMessageSuccess();
+    void onLikeMessageError(String error);
+    void onWithdrawLikeMessageSuccess();
+    void onWithdrawLikeMessageError(String error);
+    void onDeleteMessageSuccess();
+    void onDeleteMessageError(String error);
 }

@@ -24,29 +24,28 @@ import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
-import com.amap.api.maps2d.AMap;
-import com.amap.api.maps2d.CameraUpdateFactory;
-import com.amap.api.maps2d.LocationSource;
-import com.amap.api.maps2d.MapView;
-import com.amap.api.maps2d.Projection;
-import com.amap.api.maps2d.model.BitmapDescriptorFactory;
-import com.amap.api.maps2d.model.LatLng;
-import com.amap.api.maps2d.model.Marker;
-import com.amap.api.maps2d.model.MarkerOptions;
-import com.amap.api.maps2d.model.MyLocationStyle;
+import com.amap.api.maps.AMap;
+import com.amap.api.maps.MapView;
+import com.amap.api.maps.CameraUpdateFactory;
+import com.amap.api.maps.LocationSource;
+import com.amap.api.maps.Projection;
+import com.amap.api.maps.model.BitmapDescriptorFactory;
+import com.amap.api.maps.model.LatLng;
+import com.amap.api.maps.model.Marker;
+import com.amap.api.maps.model.MarkerOptions;
+import com.amap.api.maps.model.MyLocationStyle;
+
 import com.avos.avoscloud.AVGeoPoint;
 import com.avos.avoscloud.AVObject;
-import com.avos.avoscloud.AVUser;
 import com.sysu.weijia.messagewall.R;
 import com.sysu.weijia.messagewall.model.entity.Subject;
 import com.sysu.weijia.messagewall.ui.activity.CreateSubjectActivity;
 import com.sysu.weijia.messagewall.ui.activity.MainActivity;
 import com.sysu.weijia.messagewall.ui.adapter.MyInfoWindowAdapter;
-import com.sysu.weijia.messagewall.ui.view.LoginView;
 
 import java.util.ArrayList;
 
-public class MapFragment extends Fragment implements LocationSource, AMapLocationListener{
+public class MapFragment extends Fragment implements LocationSource, AMapLocationListener, AMap.OnMapClickListener {
     // 地图显示变量
     private MapView mapView;
     private AMap amap;
@@ -103,6 +102,7 @@ public class MapFragment extends Fragment implements LocationSource, AMapLocatio
         // 设置地图的自定义事件
 
         amap.setInfoWindowAdapter(new MyInfoWindowAdapter(parentActivity));
+        amap.setOnMapClickListener(this);
 
         return view;
     }
@@ -187,6 +187,9 @@ public class MapFragment extends Fragment implements LocationSource, AMapLocatio
     public void onResume() {
         super.onResume();
         mapView.onResume();
+        if (currentLongitude != 0 && currentLatitude != 0) {
+            parentActivity.startGetSubjects();
+        }
     }
 
     @Override
@@ -194,6 +197,11 @@ public class MapFragment extends Fragment implements LocationSource, AMapLocatio
         super.onPause();
         mapView.onPause();
         deactivate();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
     }
 
     @Override
@@ -229,8 +237,8 @@ public class MapFragment extends Fragment implements LocationSource, AMapLocatio
             mLocationClient.setLocationListener(this);
             mLocationCLientOption = new AMapLocationClientOption();
             mLocationCLientOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);
-            //mLocationCLientOption.setInterval(20000);
-            mLocationCLientOption.setOnceLocation(true);
+            mLocationCLientOption.setInterval(2000);
+            mLocationCLientOption.setOnceLocation(false);
             mLocationClient.setLocationOption(mLocationCLientOption);
             mLocationClient.startLocation();
         }
@@ -253,7 +261,7 @@ public class MapFragment extends Fragment implements LocationSource, AMapLocatio
             if (aMapLocation.getErrorCode() == 0) {
                 currentLatitude = aMapLocation.getLatitude();
                 currentLongitude = aMapLocation.getLongitude();
-                Log.i("yuan", "currentLatitude: " + currentLatitude + ", currentLongitude: " + currentLongitude);
+                //Log.i("yuan", "currentLatitude: " + currentLatitude + ", currentLongitude: " + currentLongitude);
 
                 parentActivity.startGetSubjects();
                 mLocationChangeListener.onLocationChanged(aMapLocation);
@@ -333,6 +341,7 @@ public class MapFragment extends Fragment implements LocationSource, AMapLocatio
 
         @Override
         public void onMarkerDragStart(Marker marker) {
+
             marker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.arrow));
         }
 
@@ -348,10 +357,21 @@ public class MapFragment extends Fragment implements LocationSource, AMapLocatio
     class MarkerClickListener implements AMap.OnMarkerClickListener {
         @Override
         public boolean onMarkerClick(Marker marker) {
-            jumpPoint(marker);
+            //jumpPoint(marker);
 
             return false;
         }
+    }
+
+    // 点击地图事件，隐藏所有标记的信息窗口
+    @Override
+    public void onMapClick(LatLng latLng) {
+        for (Marker marker : markerArrayList) {
+            if (marker.isInfoWindowShown())
+                marker.hideInfoWindow();
+        }
+        if (addedMarker != null && addedMarker.isVisible() && addedMarker.isInfoWindowShown())
+            addedMarker.hideInfoWindow();
     }
 
     class InfoWindowClickListener implements AMap.OnInfoWindowClickListener {
@@ -409,8 +429,8 @@ public class MapFragment extends Fragment implements LocationSource, AMapLocatio
                 double lat = t * latLng.latitude + (1 - t)
                         * startLatLng.latitude;
                 marker.setPosition(new LatLng(lat, lng));
-                setMarkersIcon();
-                amap.invalidate();// 刷新地图
+                //setMarkersIcon();
+                //amap.invalidate();// 刷新地图
                 if (t < 1.0) {
                     handler.postDelayed(this, 16);
                 }

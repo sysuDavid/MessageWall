@@ -80,7 +80,6 @@ public class MainActivity extends AppCompatActivity implements GetSubjectsView{
             FragmentManager fm = getFragmentManager();
             FragmentTransaction transaction = fm.beginTransaction();
             String title = item.getTitle().toString();
-
             if (title.equals(getString(R.string.action_switch_toList))) {
                 if (listFragment == null) {
                     listFragment = new ListFragment();
@@ -144,7 +143,7 @@ public class MainActivity extends AppCompatActivity implements GetSubjectsView{
     public List<AVObject> getMySubjectList() {
         return mSubjectList;
     }
-    
+
     private long exitTime = 0;
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {

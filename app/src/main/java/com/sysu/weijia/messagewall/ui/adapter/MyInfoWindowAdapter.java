@@ -1,16 +1,14 @@
 package com.sysu.weijia.messagewall.ui.adapter;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.amap.api.maps2d.AMap;
-import com.amap.api.maps2d.model.Marker;
+import com.amap.api.maps.AMap;
+import com.amap.api.maps.model.Marker;
 import com.sysu.weijia.messagewall.R;
-import com.sysu.weijia.messagewall.model.entity.Subject;
 import com.sysu.weijia.messagewall.ui.activity.SubjectDetailActivity;
 
 /**

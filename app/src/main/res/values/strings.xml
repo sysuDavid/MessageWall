@@ -1,10 +1,10 @@
 <resources>
-    <string name="app_name">MessageWall</string>
+    <string name="app_name">留言墙</string>
     <string name="AMap_apikey">b44e0cbaecddb28cc3bd5929c965db08</string>
     <string name="LeanCloud_APP_ID">lg1C6AKQm7Oln9lzc265Xr4L-gzGzoHsz</string>
     <string name="LeanCloud_APP_Key">jWyudCoYYfd9xIO98SU9nVHE</string>
-    <string name="action_switch_toMap">Map</string>
-    <string name="action_switch_toList">List</string>
+    <string name="action_switch_toMap">地图</string>
+    <string name="action_switch_toList">列表</string>
     <string name="action_setting">Setting</string>
     <string name="action_finish">完成</string>
     <string name="email">邮箱</string>
@@ -17,7 +17,7 @@
     <string name="password_find">找回密码</string>
     <string name="create_subject">添加新留言墙</string>
     <string name="tip_create">点击下方按钮可添加新的留言墙</string>
-    <string name="tip_drag">长按箭头可拖动选择留言墙地点</string>
+    <string name="tip_drag">长按黄色标记可拖动选择留言墙地点</string>
     <string name="cancel">取消</string>
     <string name="confirm">确定</string>
     <string name="address_default">某个地址</string>
