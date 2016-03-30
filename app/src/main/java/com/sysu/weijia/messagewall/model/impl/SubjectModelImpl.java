@@ -39,7 +39,8 @@ public class SubjectModelImpl implements SubjectModel {
     public void getSubjects(AVGeoPoint userLocation, final OnSubjectsGetListener listener) {
         AVQuery<AVObject> query = new AVQuery<AVObject>("Subject");
         query.whereNear("location", userLocation);
-        //query.whereWithinMiles("location", userLocation, 1);
+        // 只显示1公里内的留言墙
+        query.whereWithinMiles("location", userLocation, 1);
         Log.i("yuan", "10~1000");
         query.findInBackground(new FindCallback<AVObject>() {
             @Override

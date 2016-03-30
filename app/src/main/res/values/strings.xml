@@ -5,7 +5,8 @@
     <string name="LeanCloud_APP_Key">jWyudCoYYfd9xIO98SU9nVHE</string>
     <string name="action_switch_toMap">地图</string>
     <string name="action_switch_toList">列表</string>
-    <string name="action_setting">Setting</string>
+    <string name="action_setting">设置</string>
+    <string name="action_logout">退出</string>
     <string name="action_finish">完成</string>
     <string name="email">邮箱</string>
     <string name="password">密码</string>
